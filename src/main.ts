@@ -3,18 +3,15 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import 'zone.js';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
-  errorTailorImports,
-  provideErrorTailorConfig,
+  FORM_ERRORS,
 } from '@ngneat/error-tailor';
 import {
-  CRISPY_FORMS_CONFIG_PROVIDER,
   CrispyBuilder,
   CrispyDiv,
   CrispyForm,
   CrispyMatFormModule,
   CrispyRow,
   CrispyText,
-  MatErrorTailorControlErrorComponent,
 } from '@smallpearl/crispy-mat-form';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -27,13 +24,21 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    errorTailorImports,
     CrispyMatFormModule,
     MatButtonModule,
   ],
+  providers: [
+    {
+      provide: FORM_ERRORS, useValue: {
+        required: 'This field is required',
+        minlength: (error: { requiredLength: number, actualLength: number }) =>
+          `Expected ${error.requiredLength} charactres, but got ${error.actualLength}`,
+      },
+    },
+  ],
   template: `
     <h1>Crispy Forms Demo 1</h1>
-    <form [formGroup]="crispy.form">
+    <form [formGroup]="crispy.form" (ngSubmit)="onSubmit()">
       <crispy-mat-form [crispy]="crispy"></crispy-mat-form>
 
       <div>
@@ -62,11 +67,11 @@ export class App {
   crispy!: CrispyForm;
   constructor(crispyBuilder: CrispyBuilder) {
     this.crispy = crispyBuilder.build(
-      CrispyDiv('container', [
+      CrispyDiv('', [
         CrispyRow([
           CrispyText('firstName', 'Peter', {
             label: 'First name',
-            validators: Validators.required,
+            validators: [Validators.required, Validators.minLength(5)],
           }),
           CrispyText('lastName', 'Parker', {
             validators: Validators.required,
@@ -82,8 +87,8 @@ export class App {
   }
 
   onSubmit() {
-    console.log(
-      `onSubmit - form.value: ${JSON.stringify(this.crispy.form?.value)}`
+    window.alert(
+      `Form.value: ${JSON.stringify(this.crispy.form?.value)}`
     );
   }
 }
@@ -91,25 +96,5 @@ export class App {
 bootstrapApplication(App, {
   providers: [
     provideAnimationsAsync(),
-    { provide: CRISPY_FORMS_CONFIG_PROVIDER, useValue: {} },
-    provideErrorTailorConfig({
-      blurPredicate(element) {
-        return (
-          element.tagName === 'INPUT' ||
-          element.tagName === 'SELECT' ||
-          element.tagName === 'MAT-SELECT'
-        );
-      },
-      controlErrorComponent: MatErrorTailorControlErrorComponent,
-      errors: {
-        useValue: {
-          required: 'This field is required',
-          pattern: "Doesn't match the required pattern",
-          minlength: ({ requiredLength, actualLength }) =>
-            `Expect ${requiredLength} but got ${actualLength}`,
-          invalidAddress: (error: any) => `Address isn't valid`,
-        },
-      },
-    }),
   ],
 });
