@@ -8,6 +8,7 @@ import {
 import {
   CrispyBuilder,
   CrispyDiv,
+  CrispyEmail,
   CrispyForm,
   CrispyMatFormModule,
   CrispyRow,
@@ -44,20 +45,10 @@ import { MatButtonModule } from '@angular/material/button';
       <crispy-mat-form [crispy]="crispy"></crispy-mat-form>
 
       <div>
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          (click)="onReset()"
-        >
-          Reset</button
-        >&nbsp;
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="crispy.form.invalid"
-        >
+        <button mat-raised-button color="secondary" type="button" (click)="crispy.form.reset()">
+          Reset
+        </button>&nbsp;
+        <button mat-raised-button color="primary" type="submit" [disabled]="crispy.form.invalid">
           Submit
         </button>
       </div>
@@ -79,13 +70,13 @@ export class App {
             validators: Validators.required,
             label: 'Last name',
           }),
+          CrispyEmail('email', '', {
+            validators: Validators.required,
+            label: 'Email',
+          })
         ]),
       ])
     );
-  }
-
-  onReset() {
-    this.crispy.form?.reset();
   }
 
   onSubmit() {
