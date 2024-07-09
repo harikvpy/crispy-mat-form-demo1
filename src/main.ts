@@ -29,6 +29,8 @@ import { MatButtonModule } from '@angular/material/button';
   ],
   providers: [
     {
+      // Errors that the form's fields would raise. These errors could
+      // be a result of local validators or from server side validation.
       provide: FORM_ERRORS, useValue: {
         required: 'This field is required',
         minlength: (error: { requiredLength: number, actualLength: number }) =>
