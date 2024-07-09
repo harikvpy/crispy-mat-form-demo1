@@ -7,16 +7,20 @@ import {
 } from '@ngneat/error-tailor';
 import {
   CrispyBuilder,
+  CrispyCustomComponent,
   CrispyDiv,
   CrispyEmail,
   CrispyForm,
   CrispyMatFormModule,
   CrispyRow,
+  CrispyTemplate,
   CrispyText,
 } from '@smallpearl/crispy-mat-form';
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MyTelInputComponent } from './components/my-tel-input/my-tel-input.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +31,8 @@ import { MatButtonModule } from '@angular/material/button';
     ReactiveFormsModule,
     CrispyMatFormModule,
     MatButtonModule,
+    MatFormFieldModule,
+    MyTelInputComponent,
   ],
   providers: [
     {
@@ -40,7 +46,14 @@ import { MatButtonModule } from '@angular/material/button';
     },
   ],
   template: `
-    <h1>Crispy Forms Demo 1</h1>
+    <h1>Crispy Forms Demo 3</h1>
+    <div>
+      Crispy Form demo showing
+      <ul>
+        <li>A field with a custom component that conforms to Material's <code>MatFormFieldControl<></code> interface</li>
+        <li>A field whose content is user provided template</li>
+      </ul>
+    </div>
     <form [formGroup]="crispy.form" (ngSubmit)="onSubmit()">
       <crispy-mat-form [crispy]="crispy"></crispy-mat-form>
 
@@ -54,6 +67,15 @@ import { MatButtonModule } from '@angular/material/button';
       </div>
 
     </form>
+
+    <ng-template crispyFieldName="mobile" let-formGroup="formGroup">
+      <span *ngIf="formGroup" [formGroup]="formGroup">
+        <mat-form-field class="w-100">
+          <mat-label>Telephone (From ng-template)</mat-label>
+          <my-tel-input formControlName="mobile"></my-tel-input>
+        </mat-form-field>
+      </span>
+    </ng-template>
   `,
 })
 export class App {
@@ -61,20 +83,17 @@ export class App {
   constructor(crispyBuilder: CrispyBuilder) {
     this.crispy = crispyBuilder.build(
       CrispyDiv('', [
-        CrispyRow([
-          CrispyText('firstName', 'Peter', {
-            label: 'First name',
-            validators: [Validators.required, Validators.minLength(5)],
-          }),
-          CrispyText('lastName', 'Parker', {
-            validators: Validators.required,
-            label: 'Last name',
-          }),
-          CrispyEmail('email', '', {
-            validators: Validators.required,
-            label: 'Email',
-          })
-        ]),
+        CrispyCustomComponent(
+          'telephone',
+          { area: '618', exchange: '782', subscriber: '2890' },
+          { component: MyTelInputComponent },
+          { label: 'Telephone (Custom Component)' }
+        ),
+        CrispyTemplate('mobile', {
+          area: '737',
+          exchange: '777',
+          subscriber: '0787',
+        }),
       ])
     );
   }
