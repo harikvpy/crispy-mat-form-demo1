@@ -3,7 +3,9 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import 'zone.js';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
+  provideErrorTailorConfig,
   FORM_ERRORS,
+  errorTailorImports,
 } from '@ngneat/error-tailor';
 import {
   CrispyBuilder,
@@ -17,6 +19,7 @@ import {
 import { FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatErrorTailorControlErrorComponent } from './mat-error-tailor-control-error.component';
 
 @Component({
   selector: 'app-root',
@@ -25,10 +28,15 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    errorTailorImports,
     CrispyMatFormModule,
     MatButtonModule,
+    MatErrorTailorControlErrorComponent,
   ],
   providers: [
+    provideErrorTailorConfig({
+      controlErrorComponent: MatErrorTailorControlErrorComponent
+    }),
     {
       // Errors that the form's fields would raise. These errors could
       // be a result of local validators or from server side validation.
